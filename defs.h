@@ -121,7 +121,8 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
-void 		hello(void);
+//void 		hello(void);
+//void 		helloname(const char*);
 
 // swtch.S
 void            swtch(struct context**, struct context*);
