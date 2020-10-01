@@ -532,8 +532,42 @@ procdump(void)
     cprintf("\n");
   }
 }
-/*void
-hello(void)
+
+int
+getnumproc(void)
 {
-cprintf("helloxv6\n");
-}*/
+struct proc *p;
+int count=0;
+
+acquire(&ptable.lock);
+
+for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+{
+if(p->state != UNUSED)
+count++;
+}
+
+release(&ptable.lock);
+
+return count;
+}
+
+int
+getmaxpid(void)
+{
+  //struct uproc * table;
+  struct proc *p;
+  int i=0;
+  int maxpid=0;
+  acquire(&ptable.lock);
+  for(i=0,p=ptable.proc;p<&ptable.proc[NPROC];p++)
+  {
+    if(p->state != UNUSED){
+      maxpid = p->pid;
+      i++;
+    }
+  }
+  release(&ptable.lock);
+  return maxpid;
+
+}

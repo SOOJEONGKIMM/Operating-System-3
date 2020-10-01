@@ -105,3 +105,23 @@ argptr(0,(void*)&name, sizeof(name));
 cprintf("hello %s\n",name);
 return 0;
 }
+int
+sys_getnumproc(void)
+{
+ // argint(0,&proc);
+  cprintf("Total number of Active Processes: %d\n",getnumproc());
+  return 0;
+}
+
+int
+sys_getmaxpid(void)
+{
+ /* struct uproc *tmp;
+  int size;
+  if(argint(0,&size)<0 || argptr(1,(void*)&tmp, sizeof(*tmp))<0)
+  {
+    return -1;
+  }*/
+  cprintf("Maximum PID: %d\n",getmaxpid());
+  return 0;
+}

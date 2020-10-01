@@ -22,3 +22,5 @@
 #define SYS_close  21
 #define SYS_hello 22
 #define SYS_helloname 23
+#define SYS_getnumproc 24
+#define SYS_getmaxpid 25

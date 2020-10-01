@@ -121,8 +121,10 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
-//void 		hello(void);
-//void 		helloname(const char*);
+void 		hello(void);
+void 		helloname(const char*);
+int        	getnumproc(void);
+int         getmaxpid(void);
 
 // swtch.S
 void            swtch(struct context**, struct context*);
