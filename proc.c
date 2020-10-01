@@ -603,3 +603,28 @@ getprocinfo(int pid, struct processInfo *pI)
    
   return 0;
 }
+
+int 
+setprio(int n)
+{
+  struct proc *p;
+  
+  acquire(&ptable.lock);
+  for(p=ptable.proc;p<&ptable.proc[NPROC];p++)
+  {
+    
+    if(p->state != UNUSED){
+      p->priority = n;
+      return 0;
+    }
+  }
+  release(&ptable.lock);
+
+  return -1;
+}
+
+int 
+getprio(void)
+{
+  return 0;
+}

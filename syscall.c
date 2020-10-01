@@ -108,6 +108,8 @@ extern int sys_helloname(void);
 extern int sys_getnumproc(void);
 extern int sys_getmaxpid(void);
 extern int sys_getprocinfo(void);
+extern int sys_setprio(void);
+extern int sys_getprio(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -136,6 +138,8 @@ static int (*syscalls[])(void) = {
 [SYS_getnumproc]  sys_getnumproc,
 [SYS_getmaxpid] sys_getmaxpid,
 [SYS_getprocinfo] sys_getprocinfo,
+[SYS_setprio] sys_setprio,
+[SYS_getprio] sys_getprio,
 };
 
 void

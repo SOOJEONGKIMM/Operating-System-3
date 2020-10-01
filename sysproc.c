@@ -132,9 +132,21 @@ sys_getprocinfo(void)
   cprintf("PID    PPID   SIZE    Number of Context Switch\n");
    int pid;
     struct processInfo *tmp;
-    argint(0,&pid);
-    argptr(1,(void*)&tmp,sizeof(*tmp));
+    if(argint(0,&pid)<0 ||argptr(1,(void*)&tmp,sizeof(*tmp))<0)
+      return -1;
   getprocinfo(pid, tmp);
   
+  return 0;
+}
+int sys_setprio(void)
+{
+  int n;
+  argint(0,&n);
+  setprio(n);
+  return 0;
+}
+int sys_getprio(void)
+{
+  getprio();
   return 0;
 }

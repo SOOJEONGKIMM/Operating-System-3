@@ -126,6 +126,8 @@ void 		helloname(const char*);
 int        	getnumproc(void);
 int         getmaxpid(void);
 int         getprocinfo(int, struct processInfo*);
+int         setprio(int);
+int         getprio(void);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

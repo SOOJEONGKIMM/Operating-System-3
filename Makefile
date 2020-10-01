@@ -187,6 +187,8 @@ UPROGS=\
 	_getnumproc_test\
 	_getmaxpid_test\
 	_getprocinfo_test\
+	_set_prio\
+	_get_prio\
 	_seqinc_prio\
 	_seqdec_prio\
 
