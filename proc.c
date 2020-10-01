@@ -6,6 +6,8 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "processInfo.h"
+
 
 struct {
   struct spinlock lock;
@@ -322,9 +324,11 @@ wait(void)
 void
 scheduler(void)
 {
+  
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
+  
   
   for(;;){
     // Enable interrupts on this processor.
@@ -332,6 +336,7 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+    
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
@@ -344,7 +349,9 @@ scheduler(void)
       p->state = RUNNING;
 
       swtch(&(c->scheduler), p->context);
+     p->csnum++;//1-(5) context switch count 
       switchkvm();
+     
 
       // Process is done running for now.
       // It should have changed its p->state before coming back.
@@ -378,6 +385,7 @@ sched(void)
     panic("sched interruptible");
   intena = mycpu()->intena;
   swtch(&p->context, mycpu()->scheduler);
+  
   mycpu()->intena = intena;
 }
 
@@ -570,4 +578,28 @@ getmaxpid(void)
   release(&ptable.lock);
   return maxpid;
 
+}
+int
+getprocinfo(int pid, struct processInfo *pI)
+{
+  struct proc *p;
+  
+  acquire(&ptable.lock);
+  for(p=ptable.proc;p<&ptable.proc[NPROC];p++)
+  {
+    
+    if(p->state != UNUSED){
+      pid=p->pid;
+      pI->ppid = p->parent!=0? p->parent->pid : 0;
+      pI->psize = p->sz;
+      pI->numberContextSwitches=p->csnum;
+      
+     cprintf("%d      %d      %d    %d \n", pid, pI->ppid, pI->psize, pI->numberContextSwitches);
+       
+    }
+    
+  }
+  release(&ptable.lock);
+   
+  return 0;
 }

@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "processInfo.h"
 
 int
 sys_fork(void)
@@ -123,5 +124,17 @@ sys_getmaxpid(void)
     return -1;
   }*/
   cprintf("Maximum PID: %d\n",getmaxpid());
+  return 0;
+}
+int 
+sys_getprocinfo(void)
+{
+  cprintf("PID    PPID   SIZE    Number of Context Switch\n");
+   int pid;
+    struct processInfo *tmp;
+    argint(0,&pid);
+    argptr(1,(void*)&tmp,sizeof(*tmp));
+  getprocinfo(pid, tmp);
+  
   return 0;
 }
