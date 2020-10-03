@@ -29,7 +29,7 @@ int helloname(const char*);
 int getnumproc(void);
 int getmaxpid(void);
 int getprocinfo(void);
-int setprio(void);
+int setprio(int);
 int getprio(void);
 
 // ulib.c

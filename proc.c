@@ -90,6 +90,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = 100;
 
   release(&ptable.lock);
 
@@ -326,6 +327,8 @@ scheduler(void)
 {
   
   struct proc *p;
+  struct proc *p2;
+  struct proc *pHigh;
   struct cpu *c = mycpu();
   c->proc = 0;
   
@@ -340,6 +343,17 @@ scheduler(void)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
+
+      pHigh=p;
+     
+      for(p2=ptable.proc;p2<&ptable.proc[NPROC];p2++){
+        if(p2->state!=RUNNABLE)
+          continue;
+ 
+        if(pHigh->priority > p2->priority)
+        pHigh=p2;
+      }
+      p=pHigh;
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -605,26 +619,45 @@ getprocinfo(int pid, struct processInfo *pI)
 }
 
 int 
-setprio(int n)
+setprio(int newPrio)
 {
   struct proc *p;
-  
+
   acquire(&ptable.lock);
   for(p=ptable.proc;p<&ptable.proc[NPROC];p++)
   {
     
     if(p->state != UNUSED){
-      p->priority = n;
-      return 0;
+      cprintf("----new:%d\n",newPrio);
+      cprintf("oldprio of %s : %d\n", p->name, p->priority);
+  cprintf("newprio of pre-arg: %d\n", newPrio);
+      p->priority = newPrio;
+      cprintf("proc %s priority changed ; new prio: %d\n",p->name,p->priority);
+      
     }
   }
   release(&ptable.lock);
 
-  return -1;
+  
+  return 0;
+
 }
+
 
 int 
 getprio(void)
 {
+  struct proc *p;
+  sti();
+  acquire(&ptable.lock);
+  cprintf("name \t pid \t priority \n");
+  for(p=ptable.proc;p<&ptable.proc[NPROC];p++)
+  {
+    
+    if(p->state != UNUSED)
+      cprintf("%s \t %d \t %d \n", p->name, p->pid, p->priority);
+  }
+  release(&ptable.lock);
+
   return 0;
 }

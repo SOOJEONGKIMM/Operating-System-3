@@ -138,11 +138,19 @@ sys_getprocinfo(void)
   
   return 0;
 }
-int sys_setprio(void)
+int sys_setprio(int newPrio)
 {
-  int n;
-  argint(0,&n);
-  setprio(n);
+  cprintf("setting prio\n");
+  
+ 
+  cprintf("new:%d\n",newPrio);
+
+  //cprintf("newprio of pre-arg: %d\n", newPrio);
+  argint(0,&newPrio);
+  //cprintf("newprio arg:%d\n",newPrio);
+  //cprintf("proc %s priority changed ; new prio: %d\n",p->name,p->priority);
+ 
+  setprio(newPrio);
   return 0;
 }
 int sys_getprio(void)
