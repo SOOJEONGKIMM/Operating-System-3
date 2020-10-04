@@ -17,15 +17,16 @@ int main(void)
    a:	55                   	push   %ebp
    b:	89 e5                	mov    %esp,%ebp
    d:	51                   	push   %ecx
-   e:	83 ec 10             	sub    $0x10,%esp
- int newPrio = -23;
-	setprio(newPrio);
-  11:	6a e9                	push   $0xffffffe9
-  13:	e8 22 03 00 00       	call   33a <setprio>
+   e:	83 ec 04             	sub    $0x4,%esp
+ //int newPrio = 500;
+	//setprio(newPrio);
 	exit();
-  18:	e8 55 02 00 00       	call   272 <exit>
-  1d:	66 90                	xchg   %ax,%ax
-  1f:	90                   	nop
+  11:	e8 5c 02 00 00       	call   272 <exit>
+  16:	66 90                	xchg   %ax,%ax
+  18:	66 90                	xchg   %ax,%ax
+  1a:	66 90                	xchg   %ax,%ax
+  1c:	66 90                	xchg   %ax,%ax
+  1e:	66 90                	xchg   %ax,%ax
 
 00000020 <strcpy>:
 #include "user.h"

@@ -4,7 +4,7 @@
 #include "fcntl.h"
 int main(void)
 {
- int newPrio = -23;
-	setprio(newPrio);
+ //int newPrio = 500;
+	//setprio(newPrio);
 	exit();
 }
