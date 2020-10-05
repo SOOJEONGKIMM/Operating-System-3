@@ -90,13 +90,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
- 
-//  if(p->init!=1){
- //   p->priority = 10;
-     cprintf("hi~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
- // p->init=1;
- // }
- 
+  p->priority = 10;
 
   release(&ptable.lock);
 
@@ -337,7 +331,6 @@ scheduler(void)
   
   struct cpu *c = mycpu();
   c->proc = 0;
-  int cnt=0;
   
   for(;;){
    
@@ -360,33 +353,29 @@ scheduler(void)
           continue;
  
         if(pHigh->priority > p2->priority){//larger value, lower priority
-          p2->tick++;
-          pHigh=p2;
-          
-          
+          pHigh=p2;       
         }
       }
         p=pHigh;
        
-     //   cprintf("--prio of %s %d: p:%d t:%d\n", p->name,p->pid, p->priority,p->tick);
+        
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
-      p->current_slice = p->tick;
+      p->current_slice = 100 * p->priority;
 
       swtch(&(c->scheduler), p->context);
      p->csnum++;//1-(5) context switch count 
       switchkvm();
-      cnt++;//debug
      //cprintf("proc %s  new prio: %d cnt:%d\n",p->name,p->priority,cnt);
 
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
-     
+    cprintf("--prio of %s %d: p:%d \n", p->name,p->pid, p->priority); 
     }
     
     release(&ptable.lock);
@@ -639,15 +628,17 @@ getprocinfo(int pid, struct processInfo *pI)
 int 
 setprio(int newPrio)
 {
-  struct proc *p;
+  struct proc *p=myproc();
 
-  acquire(&ptable.lock);
+myproc()->priority = newPrio;
+ cprintf("---prio of %s %d: %d==%d \n", p->name,p->pid, p->priority, newPrio);
+ /* acquire(&ptable.lock);
   for(p=ptable.proc;p<&ptable.proc[NPROC];p++)
   {
     
     if(p->state != UNUSED){
      
-      cprintf("---prio of %s %d: %d  ?%d\n", p->name,p->pid, p->priority,p->setted);
+    
       //cprintf("oldprio of pre-arg: %d\n", p->priority);
      if(p->setted!=1){//default 
       p->priority = newPrio;
@@ -660,7 +651,8 @@ setprio(int newPrio)
       
     }
   }
-  release(&ptable.lock);
+  release(&ptable.lock);*/
+
 
   
   return 0;
