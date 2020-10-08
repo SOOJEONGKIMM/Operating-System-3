@@ -104,8 +104,9 @@ trap(struct trapframe *tf)
   // If interrupts were on while locks held, would need to check nlock.
   if(myproc() && myproc()->state == RUNNING &&
      tf->trapno == T_IRQ0+IRQ_TIMER){
-       int current=myproc()->current_slice;
-      // cprintf("current-------------%d\n",current);
+       struct proc *p = myproc();
+       int current= p->current_slice;
+       //cprintf("current \t %d==%d _ %d\n",current,p->priority,p->pid);
        if(current)
        myproc()->current_slice=current-1;
        else

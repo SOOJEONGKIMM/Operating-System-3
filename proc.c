@@ -327,7 +327,7 @@ scheduler(void)
 {
   
   struct proc *p;
-  struct proc *p2;
+  
   
   struct cpu *c = mycpu();
   c->proc = 0;
@@ -336,7 +336,7 @@ scheduler(void)
    
     // Enable interrupts on this processor.
     sti();
-    struct proc *pHigh=0;
+    
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
@@ -344,38 +344,43 @@ scheduler(void)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
-      
+      struct proc *p2=0;
+      struct proc *pHigh=0;
       //choose the process with highest priority(among RUNNABLEs)
-      pHigh=p;
+     
      
       for(p2=ptable.proc;p2<&ptable.proc[NPROC];p2++){
         if(p2->state!=RUNNABLE)
           continue;
+
+         pHigh=p;
  
-        if(pHigh->priority > p2->priority){//larger value, lower priority
+        if(pHigh->priority < p2->priority){//larger value, lower priority
+           p2->current_slice++;
+         //  p2->current_slice++;
           pHigh=p2;       
         }
       }
         p=pHigh;
        
-        
+        // p->current_slice =  p->priority*2;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
-      p->current_slice = 100 * p->priority;
+     
+     //  cprintf("here \t %d==%d _ %d\n",p->current_slice,p->priority,p->pid);
 
       swtch(&(c->scheduler), p->context);
      p->csnum++;//1-(5) context switch count 
       switchkvm();
-     //cprintf("proc %s  new prio: %d cnt:%d\n",p->name,p->priority,cnt);
 
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
-    cprintf("--prio of %s %d: p:%d \n", p->name,p->pid, p->priority); 
+   // cprintf("--prio of %s %d: p:%d \n", p->name,p->pid, p->priority); 
     }
     
     release(&ptable.lock);
@@ -629,9 +634,12 @@ int
 setprio(int newPrio)
 {
   struct proc *p=myproc();
+acquire(&ptable.lock);
+p->priority = newPrio;
 
-myproc()->priority = newPrio;
- cprintf("---prio of %s %d: %d==%d \n", p->name,p->pid, p->priority, newPrio);
+//cprintf("---prio of c:%d %d: %d==%d \n", p->current_slice,p->pid, p->priority, newPrio);
+release(&ptable.lock);
+ 
  /* acquire(&ptable.lock);
   for(p=ptable.proc;p<&ptable.proc[NPROC];p++)
   {
@@ -658,7 +666,28 @@ myproc()->priority = newPrio;
   return 0;
 
 }
+int
+cnttick(void)
+{
+  struct proc *p;
+  sti();
+  acquire(&ptable.lock);
 
+  for(p=ptable.proc;p<&ptable.proc[NPROC];p++)
+  {
+    if(p->state != UNUSED){
+      if(p->pid != myproc()->pid){
+        if(p->priority < myproc()->priority){
+          myproc()->current_slice++;
+
+        }
+      }
+      
+    }
+  }
+  release(&ptable.lock);
+  return 0;
+}
 
 int 
 getprio(void)
