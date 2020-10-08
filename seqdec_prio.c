@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
     printf(1, "\nExit order \n");
     for (int i = 0; i < N; i++)
-        printf(1, "pid d%d\n", rets[i]);
+        printf(1, "pid %d\n", rets[i]);
 
     exit();
 }

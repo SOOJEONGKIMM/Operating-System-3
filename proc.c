@@ -90,7 +90,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->priority = 10;
+  p->priority = 500;
 
   release(&ptable.lock);
 
@@ -354,14 +354,18 @@ scheduler(void)
           continue;
 
          pHigh=p;
+
+       // if(p2->pid!=pHigh->pid){
  
         if(pHigh->priority < p2->priority){//larger value, lower priority
-           p2->current_slice++;
-         //  p2->current_slice++;
+           p2->extra_slice++;
+           //p2->current_slice++;
           pHigh=p2;       
         }
+      //  }
       }
         p=pHigh;
+        
        
         // p->current_slice =  p->priority*2;
       // Switch to chosen process.  It is the process's job
@@ -370,8 +374,9 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      p->current_slice = p->extra_slice;
      
-     //  cprintf("here \t %d==%d _ %d\n",p->current_slice,p->priority,p->pid);
+   //    cprintf("here \t %d==%d _ %d\n",p->current_slice,p->priority,p->pid);
 
       swtch(&(c->scheduler), p->context);
      p->csnum++;//1-(5) context switch count 
@@ -637,7 +642,7 @@ setprio(int newPrio)
 acquire(&ptable.lock);
 p->priority = newPrio;
 
-//cprintf("---prio of c:%d %d: %d==%d \n", p->current_slice,p->pid, p->priority, newPrio);
+//cprintf("---prio of %d: %d \n", p->pid, p->priority);
 release(&ptable.lock);
  
  /* acquire(&ptable.lock);
@@ -665,28 +670,6 @@ release(&ptable.lock);
   
   return 0;
 
-}
-int
-cnttick(void)
-{
-  struct proc *p;
-  sti();
-  acquire(&ptable.lock);
-
-  for(p=ptable.proc;p<&ptable.proc[NPROC];p++)
-  {
-    if(p->state != UNUSED){
-      if(p->pid != myproc()->pid){
-        if(p->priority < myproc()->priority){
-          myproc()->current_slice++;
-
-        }
-      }
-      
-    }
-  }
-  release(&ptable.lock);
-  return 0;
 }
 
 int 
